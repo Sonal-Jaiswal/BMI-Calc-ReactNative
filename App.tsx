@@ -1,118 +1,110 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
+  TextInput,
+  Button,
   Text,
-  useColorScheme,
+  StyleSheet,
   View,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default function App(): React.JSX.Element {
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
+  const [bmi, setBmi] = useState<number | null>(null);
+  const [message, setMessage] = useState('');
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const calculateBMI = () => {
+    const weightNum = parseFloat(weight);
+    const heightNum = parseFloat(height) / 100;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+    if (!weightNum || !heightNum || heightNum <= 0) {
+      setMessage('Please enter valid numbers');
+      setBmi(null);
+      return;
+    }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    const bmiValue = weightNum / (heightNum * heightNum);
+    setBmi(bmiValue);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    if (bmiValue < 18.5) setMessage('Underweight');
+    else if (bmiValue < 24.9) setMessage('Normal weight');
+    else if (bmiValue < 29.9) setMessage('Overweight');
+    else setMessage('Obese');
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{flex: 1, justifyContent: 'center'}}>
+        <Text style={styles.title}>BMI Calculator</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Weight (kg)"
+          keyboardType="numeric"
+          value={weight}
+          onChangeText={setWeight}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Height (cm)"
+          keyboardType="numeric"
+          value={height}
+          onChangeText={setHeight}
+        />
+        <View style={styles.button}>
+          <Button title="Calculate BMI" onPress={calculateBMI} />
         </View>
-      </ScrollView>
+        {bmi !== null && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultText}>Your BMI: {bmi.toFixed(2)}</Text>
+            <Text style={styles.message}>{message}</Text>
+          </View>
+        )}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: '#eef',
+    paddingHorizontal: 20,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 24,
+    color: '#333',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  input: {
+    borderWidth: 1,
+    borderColor: '#888',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    backgroundColor: '#fff',
   },
-  highlight: {
-    fontWeight: '700',
+  button: {
+    marginBottom: 24,
+  },
+  resultContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  resultText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#444',
+  },
+  message: {
+    fontSize: 20,
+    marginTop: 10,
+    color: '#555',
   },
 });
-
-export default App;
