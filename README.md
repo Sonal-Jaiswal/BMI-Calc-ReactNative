@@ -8,8 +8,11 @@
 
 Here's a sneak peek of the app in action:
 
-![Smart BMI Calculator Preview](screenshot.png)
-
+<!-- ![Smart BMI Calculator Preview](screenshot.png) -->
+<p align="center">
+  <img src="screenshot1.png" width="45%" />
+  <img src="screenshot.png" width="45%" />
+</p>
 ---
 
 ## 💡 Features
